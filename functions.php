@@ -25,6 +25,7 @@ function h($str)
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
+//全データ取得
 function get_all_info()
 {
 // データベースに接続
@@ -44,4 +45,29 @@ $stmt->execute();
 $animals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 return $animals;
+}
+
+function search_contents($keyword)
+{
+// データベースに接続
+$dbh = connect_db();
+
+// SQL文の組み立て
+$sql ='SELECT * FROM animals where description LIKE :keyword';
+$keyword_param = '%' . $keyword . '%';
+
+// プリペアドステートメントの準備
+// $dbh->query($sql) でも良い
+$stmt = $dbh->prepare($sql);
+
+// パラメータのバインド
+$stmt->bindValue(':keyword', $keyword_param, PDO::PARAM_STR);
+
+// プリペアドステートメントの実行
+$stmt->execute();
+
+// 結果の受け取り
+$content = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+return $content;
 }
